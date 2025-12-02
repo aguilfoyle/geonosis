@@ -8,7 +8,8 @@
 .PHONY: help install setup-api db-start db-stop db-reset dev-api dev-ui dev \
         docker-up docker-down docker-logs docker-build \
         test test-api test-ui lint format \
-        migrate migrate-create clean clean-docker
+        migrate migrate-down migrate-create migrate-history migrate-reset \
+        clean clean-docker
 
 # ============================================
 # Help
@@ -50,7 +51,10 @@ help:
 	@echo ""
 	@echo "Database Migrations:"
 	@echo "  make migrate        Run pending migrations"
-	@echo "  make migrate-create Create a new migration"
+	@echo "  make migrate-down   Rollback one migration"
+	@echo "  make migrate-create Create a new migration (name=\"description\")"
+	@echo "  make migrate-history Show migration history"
+	@echo "  make migrate-reset  Reset database and re-run all migrations"
 	@echo ""
 	@echo "Cleanup:"
 	@echo "  make clean          Remove generated files and caches"
@@ -190,16 +194,36 @@ format:
 	npx prettier --write "**/*.{js,jsx,ts,tsx,json,md}"
 
 # ============================================
-# Database Migrations (placeholder for later)
+# Database Migrations
 # ============================================
 
-## Run pending database migrations
+## Run all pending migrations
 migrate:
-	@echo "Migrations not yet configured"
+	@echo "Running migrations..."
+	cd apps/api && . venv/bin/activate && alembic upgrade head
+	@echo "✓ Migrations complete"
 
-## Create a new migration
+## Rollback one migration
+migrate-down:
+	@echo "Rolling back one migration..."
+	cd apps/api && . venv/bin/activate && alembic downgrade -1
+	@echo "✓ Rollback complete"
+
+## Create a new migration (usage: make migrate-create name="description")
 migrate-create:
-	@echo "Migrations not yet configured"
+	@echo "Creating migration: $(name)"
+	cd apps/api && . venv/bin/activate && alembic revision --autogenerate -m "$(name)"
+	@echo "✓ Migration created"
+
+## Show migration history
+migrate-history:
+	cd apps/api && . venv/bin/activate && alembic history
+
+## Reset database - drop all tables and re-run migrations
+migrate-reset:
+	@echo "Resetting database migrations..."
+	cd apps/api && . venv/bin/activate && alembic downgrade base && alembic upgrade head
+	@echo "✓ Database reset complete"
 
 # ============================================
 # Cleanup
