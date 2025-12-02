@@ -1,0 +1,61 @@
+# Docker Compose configuration for Geonosis
+
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: geonosis-db
+    environment:
+      POSTGRES_USER: geonosis
+      POSTGRES_PASSWORD: geonosis
+      POSTGRES_DB: geonosis
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U geonosis"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./apps/api
+    container_name: geonosis-api
+    environment:
+      DATABASE_URL: postgresql://geonosis:geonosis@db:5432/geonosis
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      GITHUB_USERNAME: ${GITHUB_USERNAME}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      DEBUG: ${DEBUG:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./apps/api:/app
+      - ./docs:/app/docs:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+  ui:
+    build:
+      context: ./apps/ui
+    container_name: geonosis-ui
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/ui:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - api
+    command: npm run dev
+
+volumes:
+  postgres_data:

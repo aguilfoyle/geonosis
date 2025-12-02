@@ -1,0 +1,51 @@
+# Node.js
+node_modules/
+.next/
+.turbo/
+dist/
+build/
+*.tsbuildinfo
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/install-state.gz
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.eggs/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+
+# Docker
+*.log
+docker-compose.override.yml
