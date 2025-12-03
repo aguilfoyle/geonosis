@@ -6,4 +6,6 @@ All FastAPI routers should be defined in this package
 and imported here for easy registration with the app.
 """
 
-__all__: list[str] = []
+from src.routers.projects import router as projects_router
+
+__all__: list[str] = ["projects_router"]

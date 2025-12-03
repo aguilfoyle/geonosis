@@ -16,6 +16,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.config import get_settings
 from src.database import init_db
+from src.routers import projects_router
 
 # Get settings
 settings = get_settings()
@@ -107,4 +108,8 @@ async def health() -> dict:
         "database": "connected" if db_connected else "disconnected",
         "version": "0.1.0",
     }
+
+
+# Register routers
+app.include_router(projects_router, prefix="/api/v1")
 
