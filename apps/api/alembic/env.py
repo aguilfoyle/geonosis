@@ -17,7 +17,9 @@ from sqlalchemy import engine_from_config, pool
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.config import get_settings
-from src.database import Base
+# Import all models so Alembic can detect them for autogenerate
+# The models must be imported before we reference Base.metadata
+from src.models import PBI, AgentLog, Base, Feature, Project
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
