@@ -16,7 +16,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.config import get_settings
 from src.database import init_db
-from src.routers import projects_router
+from src.routers import features_router, projects_router
 
 # Get settings
 settings = get_settings()
@@ -112,4 +112,5 @@ async def health() -> dict:
 
 # Register routers
 app.include_router(projects_router, prefix="/api/v1")
+app.include_router(features_router, prefix="/api/v1")
 
